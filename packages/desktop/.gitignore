@@ -27,3 +27,7 @@ out/
 resources/opencode-cli*
 resources/icons
 resources/*.metainfo.xml
+
+# Tauri build artifacts
+src-tauri/target/
+src-tauri/gen/schemas/

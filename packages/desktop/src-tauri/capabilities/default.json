@@ -1,0 +1,25 @@
+{
+  "identifier": "default",
+  "description": "Default capabilities for all windows",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "dialog:default",
+    "dialog:allow-open",
+    "dialog:allow-save",
+    "dialog:allow-message",
+    "dialog:allow-ask",
+    "opener:default",
+    "clipboard-manager:default",
+    "notification:default",
+    "notification:allow-notify",
+    "process:default",
+    "process:allow-exit",
+    "process:allow-restart",
+    "deep-link:default",
+    "fs:default",
+    "core:event:default",
+    "core:event:allow-listen",
+    "core:event:allow-emit"
+  ]
+}

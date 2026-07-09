@@ -1,0 +1,52 @@
+{
+  "productName": "OpenCode",
+  "version": "1.17.17",
+  "identifier": "ai.opencode.desktop.dev",
+  "build": {
+    "frontendDist": "../out/renderer",
+    "devUrl": "http://localhost:5173",
+    "beforeDevCommand": "bun run prebuild && bun run vite",
+    "beforeBuildCommand": "bun run build"
+  },
+  "plugins": {
+    "updater": {
+      "active": true,
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDEzQzY1OEY3MDUxQzdDNjMKUldSamZCd0Y5MWpHRStzUVpqbWZoZGRZYzRmcDZ4OWlHbXI0YUlnRHJ0YXlzOXQwVzZHUnQ0Q1YK",
+      "endpoints": [
+        "https://update.opencode.ai/{{target}}/{{current_version}}"
+      ]
+    }
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "OpenCode",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 640,
+        "minHeight": 400,
+        "center": true
+      }
+    ],
+    "withGlobalTauri": true,
+    "security": {
+      "csp": "default-src 'self'; connect-src 'self' http://127.0.0.1:* http://localhost:*; img-src 'self' asset: https://asset.localhost data:; style-src 'self' 'unsafe-inline'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "resources": {
+      "../../opencode/dist/node/*": "node-dist/"
+    }
+  }
+}
