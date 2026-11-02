@@ -74,6 +74,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-
 
+      - name: Clean node_modules
+        run: |
+          if (Test-Path "node_modules") { Remove-Item -Recurse -Force "node_modules" }
+          foreach ($dir in Get-ChildItem "packages" -Directory) {
+            if (Test-Path "$($dir.FullName)\node_modules") { Remove-Item -Recurse -Force "$($dir.FullName)\node_modules" }
+          }
+        shell: pwsh
+
       - name: Install dependencies (root)
         run: bun install
         working-directory: ${{ github.workspace }}
