@@ -2,7 +2,6 @@
 import { $ } from "bun"
 import * as path from "node:path"
 import * as fs from "node:fs/promises"
-
 import { resolveChannel } from "./utils"
 
 const channel = resolveChannel()
@@ -22,7 +21,8 @@ try {
 } catch {}
 
 // Copy node_modules to node_dist for bundling in the installer
-await $`cp -r ${desktopNodeModules} ${serverNodeModules}`
+// Use fs.cp for cross-platform compatibility
+await fs.cp(desktopNodeModules, serverNodeModules, { recursive: true })
 
 // Write sidecar entry point (reads env vars, starts server)
 await fs.writeFile(
