@@ -74,9 +74,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-
 
-      - name: Install dependencies
+      - name: Install dependencies (root)
         run: bun install
         working-directory: ${{ github.workspace }}
+
+      - name: Install app dependencies
+        run: bun install
+        working-directory: ${{ github.workspace }}/packages/app
 
       - name: Build CLI (required for sidecar)
         run: bun run packages/opencode/script/build.ts
