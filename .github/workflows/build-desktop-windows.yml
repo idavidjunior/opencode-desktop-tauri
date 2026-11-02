@@ -79,8 +79,10 @@ jobs:
         working-directory: ${{ github.workspace }}
 
       - name: Install app dependencies
-        run: bun install
+        run: bun install --dev
         working-directory: ${{ github.workspace }}/packages/app
+        env:
+          NODE_ENV: development
 
       - name: Build CLI (required for sidecar)
         run: bun run packages/opencode/script/build.ts
