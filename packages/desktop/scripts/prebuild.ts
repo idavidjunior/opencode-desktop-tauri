@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+﻿#!/usr/bin/env bun
 import { $ } from "bun"
 import * as path from "node:path"
 import * as fs from "node:fs/promises"
@@ -11,11 +11,18 @@ await $`bun ./scripts/copy-metainfo.ts ${channel}`
 
 await $`cd ../opencode && bun script/build-node.ts`
 
-// Symlink node_modules so the ESM sidecar can resolve external deps (@lydell/node-pty)
+// Copy node_modules so the ESM sidecar can resolve external deps (@lydell/node-pty)
 const nodeDist = path.resolve(import.meta.dir, "../../opencode/dist/node")
 const desktopNodeModules = path.resolve(import.meta.dir, "../node_modules")
 const serverNodeModules = path.join(nodeDist, "node_modules")
-await fs.symlink(desktopNodeModules, serverNodeModules, "dir").catch(() => {})
+
+// Remove existing node_modules (symlink or dir)
+try {
+  await fs.rm(serverNodeModules, { recursive: true, force: true })
+} catch {}
+
+// Copy node_modules to node_dist for bundling in the installer
+await $`cp -r ${desktopNodeModules} ${serverNodeModules}`
 
 // Write sidecar entry point (reads env vars, starts server)
 await fs.writeFile(
