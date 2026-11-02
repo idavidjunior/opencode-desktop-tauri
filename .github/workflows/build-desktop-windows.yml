@@ -99,6 +99,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GITHUB_RUN_ID: ${{ github.run_id }}
 
+      - name: Install cargo-tauri
+        run: cargo install cargo-tauri --locked
+
       - name: Build Desktop (Tauri)
         run: bun run tauri:build
         working-directory: packages/desktop
