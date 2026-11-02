@@ -85,7 +85,7 @@ jobs:
           NODE_ENV: development
 
       - name: Build CLI (required for sidecar)
-        run: bun run packages/opencode/script/build.ts
+        run: bun run packages/opencode/script/build.ts --single
         working-directory: ${{ github.workspace }}
 
       - name: Prepare desktop build
