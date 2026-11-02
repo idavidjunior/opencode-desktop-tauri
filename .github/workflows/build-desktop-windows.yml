@@ -26,8 +26,8 @@ env:
 jobs:
   build-desktop-windows:
     name: Build Windows Desktop (Tauri)
-    runs-on: blacksmith-4vcpu-windows-2025
-    timeout-minutes: 60
+    runs-on: windows-latest
+    timeout-minutes: 90
 
     steps:
       - name: Checkout repository
