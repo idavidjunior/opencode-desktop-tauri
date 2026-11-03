@@ -26,6 +26,8 @@ await Bun.build({
   files: {
     "opencode-web-ui.gen.ts": "",
   },
+  // Bundle all dependencies inline except node-pty
+  conditions: ["node"],
 })
 
 console.log("Build complete")
