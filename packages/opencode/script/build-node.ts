@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 
+import { $ } from "bun"
 import { Script } from "@opencode-ai/script"
 import path from "path"
 import { fileURLToPath } from "url"
@@ -29,5 +30,10 @@ await Bun.build({
   // Bundle all dependencies inline except node-pty
   conditions: ["node"],
 })
+
+// Install @lydell/node-pty in the dist/node folder so it gets bundled in the Tauri installer
+const nodeDist = path.join(dir, "dist", "node")
+console.log("Installing @lydell/node-pty in dist/node...")
+await $`bun install @lydell/node-pty --cwd ${nodeDist}`
 
 console.log("Build complete")
