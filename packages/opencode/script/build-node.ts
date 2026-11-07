@@ -20,44 +20,58 @@ const nativeModuleDir = path.join(dir, "temp-node-pty")
 await $`mkdir -p ${nativeModuleDir}`
 await $`cd ${nativeModuleDir} && bun add @lydell/node-pty`
 
-// Find the compiled .node file (Bun on Windows uses .bun directory structure)
-const bunDir = path.join(nativeModuleDir, "node_modules", ".bun")
+// Find the compiled .node file - use require.resolve to locate the package
 let nodeFilePath = ""
 let nodeFile = ""
 
-// Check Bun's internal structure first
-if (await fs.promises.stat(bunDir).catch(() => false)) {
-  const entries = await fs.promises.readdir(bunDir, { recursive: true })
-  const ptyEntry = entries.find(e => e.includes("@lydell+node-pty") && e.endsWith(".node"))
-  if (ptyEntry) {
-    nodeFilePath = path.join(bunDir, ptyEntry)
-    nodeFile = ptyEntry
+try {
+  // Try to resolve the module from the temp directory
+  const resolved = require.resolve("@lydell/node-pty", { paths: [nativeModuleDir] })
+  const resolvedDir = path.dirname(resolved)
+  
+  // Look for .node file in the resolved directory and subdirectories
+  const findNodeFile = async (dirPath: string): Promise<string | null> => {
+    const entries = await fs.promises.readdir(dirPath, { withFileTypes: true })
+    for (const entry of entries) {
+      const fullPath = path.join(dirPath, entry.name)
+      if (entry.isDirectory()) {
+        const found = await findNodeFile(fullPath)
+        if (found) return found
+      } else if (entry.name.endsWith(".node")) {
+        return fullPath
+      }
+    }
+    return null
   }
-}
+  
+  nodeFilePath = await findNodeFile(resolvedDir) || ""
+  if (nodeFilePath) {
+    nodeFile = path.basename(nodeFilePath)
+  }
+} catch {}
 
-// Fallback: check standard node_modules structure
+// Fallback: check Bun's internal cache structure
 if (!nodeFilePath) {
-  const standardPath = path.join(nativeModuleDir, "node_modules", "@lydell", "node-pty")
-  if (await fs.promises.stat(standardPath).catch(() => false)) {
-    const nodeFiles = await fs.promises.readdir(standardPath, { recursive: true })
-    nodeFile = nodeFiles.find(f => f.endsWith(".node"))
-    if (nodeFile) {
-      nodeFilePath = path.join(standardPath, nodeFile)
+  const bunCacheDir = path.join(nativeModuleDir, "node_modules", ".bun")
+  if (await fs.promises.stat(bunCacheDir).catch(() => false)) {
+    const findInBunCache = async (dirPath: string): Promise<string | null> => {
+      const entries = await fs.promises.readdir(dirPath, { withFileTypes: true })
+      for (const entry of entries) {
+        const fullPath = path.join(dirPath, entry.name)
+        if (entry.isDirectory()) {
+          const found = await findInBunCache(fullPath)
+          if (found) return found
+        } else if (entry.name.endsWith(".node")) {
+          return fullPath
+        }
+      }
+      return null
+    }
+    nodeFilePath = await findInBunCache(bunCacheDir) || ""
+    if (nodeFilePath) {
+      nodeFile = path.basename(nodeFilePath)
     }
   }
-}
-
-// Final fallback: use require.resolve to find the module
-if (!nodeFilePath) {
-  try {
-    const resolved = require.resolve("@lydell/node-pty", { paths: [nativeModuleDir] })
-    const resolvedDir = path.dirname(resolved)
-    const nodeFiles = await fs.promises.readdir(resolvedDir, { recursive: true })
-    nodeFile = nodeFiles.find(f => f.endsWith(".node"))
-    if (nodeFile) {
-      nodeFilePath = path.join(resolvedDir, nodeFile)
-    }
-  } catch {}
 }
 
 if (!nodeFilePath) {
