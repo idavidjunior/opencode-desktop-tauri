@@ -32,7 +32,7 @@ async function copyFiltered(src: string, dest: string) {
     const destPath = path.join(dest, entry.name)
     if (entry.isDirectory()) {
       await copyFiltered(srcPath, destPath)
-    } else if (!entry.name.endsWith(".d.ts") && !entry.name.endsWith(".map")) {
+    } else if (entry.isFile() && !entry.name.endsWith(".d.ts") && !entry.name.endsWith(".map")) {
       await fs.copyFile(srcPath, destPath)
     }
   }
