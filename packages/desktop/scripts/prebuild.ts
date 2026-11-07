@@ -25,8 +25,10 @@ try {
 // Copy node_modules to node_dist for bundling in the installer
 // Filter out .d.ts and .map files that cause WiX build failures (LGHT0103)
 async function copyFiltered(src: string, dest: string) {
+  console.log(`[prebuild] Copying ${src} -> ${dest}`)
   await fs.mkdir(dest, { recursive: true })
   const entries = await fs.readdir(src, { withFileTypes: true })
+  console.log(`[prebuild] Found ${entries.length} entries in ${src}`)
   for (const entry of entries) {
     const srcPath = path.join(src, entry.name)
     const destPath = path.join(dest, entry.name)
@@ -38,7 +40,21 @@ async function copyFiltered(src: string, dest: string) {
   }
 }
 
+console.log(`[prebuild] Copying node_modules from ${desktopNodeModules} to ${serverNodeModules}`)
 await copyFiltered(desktopNodeModules, serverNodeModules)
+console.log(`[prebuild] Copy complete`)
+
+// Verify the dist/node folder exists and has content
+const verifyDist = path.resolve(import.meta.dir, "../../opencode/dist/node")
+try {
+  const entries = await fs.readdir(verifyDist, { withFileTypes: true })
+  console.log(`[prebuild] Verified ${verifyDist} has ${entries.length} entries`)
+  for (const entry of entries) {
+    console.log(`[prebuild]   ${entry.name} (${entry.isDirectory() ? 'dir' : 'file'})`)
+  }
+} catch (e) {
+  console.log(`[prebuild] WARNING: Could not verify ${verifyDist}: ${e}`)
+}
 
 // Write sidecar entry point (reads env vars, starts server)
 await fs.writeFile(
