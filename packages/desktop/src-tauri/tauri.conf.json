@@ -48,8 +48,10 @@
     "resources": {
       "../../opencode/dist/node/**/*": "node-dist/"
     },
-    "nsis": {
-      "script": "nsis/custom.nsi"
+    "windows": {
+      "nsis": {
+        "script": "nsis/custom.nsi"
+      }
     }
   }
 }
