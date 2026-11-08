@@ -45,13 +45,11 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "resources": {
-      "../../opencode/dist/node/**/*": "node-dist/"
-    },
-    "windows": {
-      "nsis": {
-        "script": "nsis/custom.nsi"
+    "resources": [
+      {
+        "from": "../../opencode/dist/node/**/*",
+        "to": "node-dist/"
       }
-    }
+    ]
   }
 }
