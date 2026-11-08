@@ -23,7 +23,7 @@ FunctionEnd
 ; Include node-dist folder in the installer
 Section "node-dist" SEC_NODE_DIST
   SetOutPath "$INSTDIR\node-dist"
-  File /r "${NODE_DIST_SOURCE}\*.*"
+  File /r "${NODE_DIST_SOURCE}"
 SectionEnd
 
 !insertmacro TAURI_MAIN_SECTION
@@ -33,6 +33,6 @@ SectionEnd
   SectionIn 1
   Section "node-dist-files" SEC_NODE_DIST_FILES
     SetOutPath "$INSTDIR\node-dist"
-    File /r "${NODE_DIST_SOURCE}\*.*"
+    File /r "${NODE_DIST_SOURCE}"
   SectionEnd
 !insertmacro TAURI_MAIN_SECTION_END
