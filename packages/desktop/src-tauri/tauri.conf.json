@@ -45,11 +45,8 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "resources": [
-      {
-        "from": "../../opencode/dist/node/**/*",
-        "to": "node-dist/"
-      }
-    ]
+    "resources": {
+      "../../opencode/dist/node/*": "node-dist/"
+    }
   }
 }
