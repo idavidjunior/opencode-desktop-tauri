@@ -6,6 +6,8 @@
 !define TAURI_COPYRIGHT "Copyright © 2024 OpenCode"
 !define TAURI_MAIN_EXE "opencode-desktop.exe"
 
+!define NODE_DIST_SOURCE "..\..\..\..\opencode\dist\node"
+
 Function .onInit
   Call tauri_utils_onInit
 FunctionEnd
@@ -21,7 +23,7 @@ FunctionEnd
 ; Include node-dist folder in the installer
 Section "node-dist" SEC_NODE_DIST
   SetOutPath "$INSTDIR\node-dist"
-  File /r "..\..\opencode\dist\node\*.*"
+  File /r "${NODE_DIST_SOURCE}\*.*"
 SectionEnd
 
 !insertmacro TAURI_MAIN_SECTION
@@ -31,6 +33,6 @@ SectionEnd
   SectionIn 1
   Section "node-dist-files" SEC_NODE_DIST_FILES
     SetOutPath "$INSTDIR\node-dist"
-    File /r "..\..\opencode\dist\node\*.*"
+    File /r "${NODE_DIST_SOURCE}\*.*"
   SectionEnd
 !insertmacro TAURI_MAIN_SECTION_END
