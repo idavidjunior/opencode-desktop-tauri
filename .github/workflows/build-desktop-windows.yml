@@ -160,6 +160,45 @@ jobs:
           path: ${{ steps.artifacts.outputs.files }}
           retention-days: 30
 
+      - name: Create portable distribution
+        run: |
+          $distPath = "${{ github.workspace }}\packages\desktop\src-tauri\target\release\bundle"
+          $exePath = Get-ChildItem "$distPath\exe" -Filter "*.exe" -Recurse -ErrorAction SilentlyContinue
+          if (-not $exePath) {
+            $exePath = Get-ChildItem "$distPath" -Filter "*.exe" -Recurse -ErrorAction SilentlyContinue
+          }
+          $nodeDistPath = "${{ github.workspace }}\packages\opencode\dist\node"
+          $portableDir = "${{ github.workspace }}\opencode-portable"
+          
+          if ($exePath -and (Test-Path $nodeDistPath)) {
+            New-Item -ItemType Directory -Force -Path $portableDir | Out-Null
+            Copy-Item $exePath.FullName -Destination "$portableDir\opencode.exe" -Force
+            Copy-Item $nodeDistPath -Destination "$portableDir\node-dist" -Recurse -Force
+            
+            # Create launcher batch file
+            @"
+@echo off
+cd /d "%~dp0"
+start "" "opencode.exe"
+"@ | Set-Content -Encoding ASCII "$portableDir\OpenCode.bat"
+            
+            # Create ZIP
+            Compress-Archive -Path "$portableDir\*" -DestinationPath "${{ github.workspace }}\opencode-portable-windows.zip" -Force
+            Write-Output "Portable ZIP created: ${{ github.workspace }}\opencode-portable-windows.zip"
+          } else {
+            Write-Warning "Executable or node-dist not found, skipping portable build"
+            if (-not $exePath) { Write-Warning "Executable not found" }
+            if (-not (Test-Path $nodeDistPath)) { Write-Warning "node-dist not found at $nodeDistPath" }
+          }
+        shell: pwsh
+
+      - name: Upload portable distribution
+        uses: actions/upload-artifact@v4
+        with:
+          name: opencode-portable-windows
+          path: ${{ github.workspace }}\opencode-portable-windows.zip
+          retention-days: 30
+
       - name: Create GitHub Release (if version provided)
         if: github.event.inputs.version != ''
         uses: softprops/action-gh-release@v2
