@@ -176,11 +176,8 @@ jobs:
             Copy-Item $nodeDistPath -Destination "$portableDir\node-dist" -Recurse -Force
             
             # Create launcher batch file
-            @"
-@echo off
-cd /d "%~dp0"
-start "" "opencode.exe"
-"@ | Set-Content -Encoding ASCII "$portableDir\OpenCode.bat"
+            $batContent = '@echo off' + "`r`n" + 'cd /d "%~dp0"' + "`r`n" + 'start "" "opencode.exe"' + "`r`n"
+            Set-Content -Encoding ASCII -Path "$portableDir\OpenCode.bat" -Value $batContent
             
             # Create ZIP
             Compress-Archive -Path "$portableDir\*" -DestinationPath "${{ github.workspace }}\opencode-portable-windows.zip" -Force
